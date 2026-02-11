@@ -1,11 +1,9 @@
 import { BookOpen, PenLine } from "lucide-react";
 import Button from "./ui/button";
+import Link from "next/link";
+import MMLink from "./ui/buttonLink";
 
-interface EmptyStateProps {
-  onCreateNew: () => void;
-}
-
-export function EmptyState({ onCreateNew }: EmptyStateProps) {
+export function EmptyState() {
   return (
     <div className="flex flex-col items-center justify-center py-16 px-4 text-center animate-fade-in">
       <div className="w-20 h-20 rounded-2xl bg-secondary flex items-center justify-center mb-6">
@@ -17,13 +15,20 @@ export function EmptyState({ onCreateNew }: EmptyStateProps) {
       <p className="text-muted-foreground max-w-sm mb-6">
         Start capturing your thoughts, track your moods, and let AI help you reflect on your journey.
       </p>
-      <Button
-        onClick={onCreateNew}
+      <MMLink
+        href={`/journal/new`}
         className="bg-primary hover:bg-accent/80 text-primary-foreground h-10 rounded-md px-4 py-2"
       >
         <PenLine className="w-4 h-4 mr-2" />
         Write your first entry
-      </Button>
+      </MMLink>
+      <div className="flex justify-center pt-12">
+            <img
+              src="/auth-illustration.png"
+              alt="Person journaling peacefully"
+              className="w-72 h-72 object-contain drop-shadow-md"
+            />
+          </div>
     </div>
   );
 }

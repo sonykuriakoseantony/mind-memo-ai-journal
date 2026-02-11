@@ -12,11 +12,13 @@ export async function POST(req: NextRequest) {
 
     if (existingUser) {
       if (password == existingUser.password) {
-        const token = signToken({ userMail: existingUser.email });
-        return NextResponse.json(
+        const token = signToken({ userMail: existingUser.email, userName: existingUser.name });
+        const response = NextResponse.json(
           { user: existingUser, token },
           { status: 200 },
         );
+        response.cookies.set("token", token, { httpOnly: true, path: "/" });
+        return response;
       } else {
         return NextResponse.json(
           { error: "Incorrect Email or Password!!" },

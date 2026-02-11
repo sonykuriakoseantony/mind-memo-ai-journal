@@ -3,7 +3,16 @@ import Button from "./ui/button";
 import { MoodBadge } from "./MoodBadge";
 import { Pencil, Sparkle, Trash2 } from "lucide-react";
 
-export default function JournalCard() {
+type JournalCardProps = {
+  journal: any
+  onDelete: (id: string) => void
+}
+
+export default function JournalCard({
+  journal,
+  onDelete
+}: JournalCardProps) {
+  
   return (
     <div className="container">
       <div className="group rounded-lg border border-border/50 bg-card text-card-foreground shadow-sm hover:shadow-card transition-all duration-300 animate-slide-up">
@@ -11,20 +20,20 @@ export default function JournalCard() {
           <div className="flex items-start justify-between gap-4">
             <div className="flex-1 min-w-0">
               <h3 className="font-display text-xl font-semibold text-foreground truncate">
-                entry 2
+                {journal.title}
               </h3>
               <p className="mt-1 text-sm text-muted-foreground">
                 February 6, 2026 at 10:13 PM
               </p>
             </div>
 
-            <MoodBadge sentiment={"energetic"} emoji={"energetic"}></MoodBadge>
+            <MoodBadge sentiment={journal.mood} emoji={journal.mood}></MoodBadge>
           </div>
         </div>
 
         <div className="p-6 pt-0">
           <div className="prose prose-sm max-w-none text-foreground/80">
-            <p className="whitespace-pre-wrap leading-relaxed">description 2</p>
+            <p className="whitespace-pre-wrap leading-relaxed">{journal.content}</p>
           </div>
 
           <div
@@ -38,7 +47,7 @@ export default function JournalCard() {
               <Sparkle className="w-4 h-4 mr-1.5"/> Generate Summary
             </Button>
 
-            <Button className="h-9 rounded-md px-3 text-muted-foreground hover:bg-accent/80 hover:text-white ml-auto">
+            <Button onClick={() => onDelete(journal._id)} className="h-9 rounded-md px-3 text-muted-foreground hover:bg-accent/80 hover:text-white ml-auto">
               <Trash2  className="w-4 h-4 mr-1.5"/> Delete
             </Button>
           </div>

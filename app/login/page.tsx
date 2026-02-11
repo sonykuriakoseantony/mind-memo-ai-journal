@@ -7,7 +7,7 @@ import { BookOpen, Lock, Mail, User } from "lucide-react"
 export default function Login() {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
-  const navigate = useRouter()
+  const navigate = useRouter();
 
   async function submit(e : React.FormEvent) {
     e.preventDefault();
@@ -29,7 +29,9 @@ export default function Login() {
 
       if(res.status == 200){
         alert("User Login success!");
-        navigate.push('/');
+        sessionStorage.setItem("token", data.token);
+        sessionStorage.setItem("user", JSON.stringify(data.user));
+        navigate.push('/journals');
       }
     }catch(err){
       console.log(err);
@@ -129,7 +131,7 @@ export default function Login() {
                 className="text-sm text-muted-foreground
                  transition-colors hover:text-foreground"
               >
-                "Don't have an account? <Link href={`/register`}>Sign up</Link>
+                Don't have an account? <Link href={`/register`}>Sign up</Link>
               </p>
             </div>
           </div>

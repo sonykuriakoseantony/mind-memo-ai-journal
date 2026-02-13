@@ -1,6 +1,6 @@
 "use client";
 import Button from "@/components/ui/button";
-import { X, Save, Sparkles, RefreshCcw } from "lucide-react";
+import { X, Save, Sparkles, RefreshCcw, Loader2 } from "lucide-react";
 import React, { useState } from "react";
 import MMLink from "./ui/buttonLink";
 
@@ -98,7 +98,8 @@ export default function EntryForm() {
                            disabled:cursor-not-allowed disabled:opacity-50
                            md:text-sm border-border/50
                            focus:border-primary/50"
-                  placeholder="What's on your mind?" />
+                  placeholder="What's on your mind?"
+                />
               </div>
 
               {/* Body */}
@@ -131,7 +132,8 @@ export default function EntryForm() {
                   disabled={isLoading}
                   className="h-10 px-4 py-2 flex-1 sm:flex-none
                            bg-primary hover:bg-primary/90
-                           text-primary-foreground">
+                           text-primary-foreground"
+                >
                   <RefreshCcw className="w-4 h-4 mr-2" />
                   Reset
                 </Button>
@@ -140,9 +142,19 @@ export default function EntryForm() {
                   disabled={!isValid || isLoading}
                   className="h-10 px-4 py-2 flex-1 sm:flex-none
                            bg-primary hover:bg-primary/90
-                           text-primary-foreground">
-                  <Save className="w-4 h-4 mr-2" />
-                  Save Entry
+                           text-primary-foreground"
+                >
+                  {isLoading ? (
+                    <>
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      {isAnalyzing ? "Analyzing mood..." : "Saving..."}
+                    </>
+                  ) : (
+                    <>
+                      <Save className="w-4 h-4 mr-2" />
+                      Save Entry
+                    </>
+                  )}
                 </Button>
 
                 <div className="hidden sm:flex items-center gap-2 text-sm text-muted-foreground">

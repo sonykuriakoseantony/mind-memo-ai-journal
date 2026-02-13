@@ -3,21 +3,14 @@ import { EmptyState } from "@/components/EmptyState";
 import JournalCard from "@/components/JournalCard";
 import { useEffect, useState } from "react";
 
-interface Journal {
-  _id: string;
-  [key: string]: any;
-}
-
 export default function Journals() {
-    const [journals, setJournals] = useState<Journal[]>([]);
-    // const [deleteId, setDeleteId] = useState<string | null>(null);
+    const [journals, setJournals] = useState([])
+    const [generatingSummaryId, setGeneratingSummaryId] = useState<string | null>(null);
     
   useEffect(() =>{
     fetchAllEntries();
   }, [])
 
-  console.log(journals);
-  
 
   const fetchAllEntries = async () => {
     try{
@@ -49,13 +42,46 @@ export default function Journals() {
     }
   }
 
+  const handleGenerateSummary = async (entry : any) => {
+    setGeneratingSummaryId(entry._id);
+    try{
+      const res = await fetch('/api/ai', {
+        method : 'PUT',
+        body : JSON.stringify(entry)
+      })
+      if(res.ok){
+        console.log("Summary generated successfully!");
+        setGeneratingSummaryId(null);
+        fetchAllEntries();
+      }
+    }catch(err){
+      console.log(err);
+      console.log("Error generating summary!");
+    }
+  }
+
+  const updateEntry = async (id : string, updatedData : any) => {
+    try{
+        const res = await fetch('/api/journals',{
+          method : 'PUT',
+          body : JSON.stringify({id, ...updatedData})
+        })
+        if(res.ok){
+          fetchAllEntries();
+        }
+    }catch(err){
+      console.log(err);
+      console.log("Error updating entry!");
+    }
+  }
+
   return (
     <>
       <main className="container py-6">
         {journals.length > 0 ? (
-          journals.map((journal, index) => (
+          journals.map((journal : any, index : number) => (
             <div key={index} className="my-6">
-              <JournalCard journal={journal} onDelete={() => removeEntry(journal._id)} />
+              <JournalCard journal={journal} onDelete={() => removeEntry(journal._id)} onGenerateSummary={handleGenerateSummary} onEdit={(id) => updateEntry(id, journal)} isGeneratingSummary={generatingSummaryId === journal.id}/>
             </div>
           ))
         ) : (

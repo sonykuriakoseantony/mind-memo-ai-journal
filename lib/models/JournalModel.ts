@@ -5,6 +5,8 @@ export interface IJournal{
     title : string;
     content : string;
     mood : string;
+    emoji : string;
+    summary: string[]
 }
 
 const journalSchema = new Schema<IJournal>({
@@ -26,6 +28,14 @@ const journalSchema = new Schema<IJournal>({
     mood : {
         type : String,
         required : true
+    },
+    emoji : {
+        type : String,
+        required : true
+    },
+    summary :{
+        type : [String],
+        required : false
     }
 },
 {

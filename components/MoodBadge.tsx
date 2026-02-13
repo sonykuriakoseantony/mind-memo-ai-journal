@@ -2,7 +2,7 @@ type MoodType = "positive" | "neutral" | "stressed" | "reflective" | "sad" | "en
 
 interface ModdBadgeProps {
   sentiment: string;
-  emoji?: MoodType;
+  emoji?: string;
 }
 
 const emojiMap: Record<MoodType, string> = {
@@ -34,7 +34,7 @@ export function MoodBadge({ sentiment, emoji }: ModdBadgeProps) {
         return "bg-mood-sad/15 text-mood-sad border-mood-sad/30";
 
       default:
-        return "bg-mood-sad/15 text-mood-sad border-mood-sad/30";
+        return "bg-orange-200/15 text-orange-700 border-orange-800/30";
     }
   };
 
@@ -42,7 +42,7 @@ export function MoodBadge({ sentiment, emoji }: ModdBadgeProps) {
     <span
       className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-medium border transition-all duration-200 ${getSentimentColor(sentiment)}`}
     >
-      <span className="text-base">{emoji ? emojiMap[emoji] : "😊"}</span>
+      <span className="text-base">{emoji}</span>
       <span>{sentiment}</span>
     </span>
   );

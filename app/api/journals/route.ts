@@ -19,7 +19,9 @@ export async function POST(req:NextRequest){
         await connectDB();
         const { userId, title, content } = await req.json();
 
-        const mood = await analyzeMood(content);
+        const moodObj = await analyzeMood(content);
+        const mood = moodObj.mood
+        const emoji = moodObj.emoji 
 
         console.log("Mood Analysis results : ", mood);
 
@@ -28,7 +30,7 @@ export async function POST(req:NextRequest){
             return NextResponse.json("Entry with same title exists", { status: 401 })
         }
         else{
-            const newEntry = await journals.create({ userId, title, content, mood });
+            const newEntry = await journals.create({ userId, title, content, mood, emoji });
             return NextResponse.json(newEntry, {status : 201});
         }
 
@@ -42,6 +44,22 @@ export async function DELETE(req:NextRequest){
     try{
         await connectDB();
         const { id } = await req.json();
+
+        const deletedEntry = await journals.findByIdAndDelete({ _id: id });
+        return NextResponse.json(deletedEntry, {status : 200});
+
+    }catch(err){
+        console.log(err);
+        return NextResponse.json(err, { status: 500 })
+    }
+}
+
+export async function PUT(req:NextRequest){
+    try{
+        await connectDB();
+        const { id, ...updatedData } = await req.json();
+
+        const updatedEntry = await journals.findByIdAndUpdate({ _id: id }, updatedData, { new: true });
 
         const deletedEntry = await journals.findByIdAndDelete({ _id: id });
         return NextResponse.json(deletedEntry, {status : 200});

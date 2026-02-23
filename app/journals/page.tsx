@@ -11,12 +11,16 @@ export default function Journals() {
     fetchAllEntries();
   }, [])
 
+  console.log(journals);
+  
 
   const fetchAllEntries = async () => {
     try{
       const res = await fetch('/api/journals')
       if(res.status == 200){
-        setJournals(await res.json());
+        const data = await res.json();
+        data.sort((a: any, b:any) => b.createdAt - a.createdAt);
+        setJournals(data);
       }
       else{
         console.log("No journals available");
@@ -60,20 +64,7 @@ export default function Journals() {
     }
   }
 
-  const updateEntry = async (id : string, updatedData : any) => {
-    try{
-        const res = await fetch('/api/journals',{
-          method : 'PUT',
-          body : JSON.stringify({id, ...updatedData})
-        })
-        if(res.ok){
-          fetchAllEntries();
-        }
-    }catch(err){
-      console.log(err);
-      console.log("Error updating entry!");
-    }
-  }
+  
 
   return (
     <>
@@ -81,7 +72,7 @@ export default function Journals() {
         {journals.length > 0 ? (
           journals.map((journal : any, index : number) => (
             <div key={index} className="my-6">
-              <JournalCard journal={journal} onDelete={() => removeEntry(journal._id)} onGenerateSummary={handleGenerateSummary} onEdit={(id) => updateEntry(id, journal)} isGeneratingSummary={generatingSummaryId === journal.id}/>
+              <JournalCard journal={journal} onDelete={() => removeEntry(journal._id)} onGenerateSummary={handleGenerateSummary} onEdit={journal} isGeneratingSummary={generatingSummaryId == journal._id}/>
             </div>
           ))
         ) : (

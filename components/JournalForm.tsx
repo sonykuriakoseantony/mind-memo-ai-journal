@@ -1,29 +1,54 @@
 "use client";
 import Button from "@/components/ui/button";
 import { X, Save, Sparkles, RefreshCcw, Loader2 } from "lucide-react";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import MMLink from "./ui/buttonLink";
+import { useRouter } from "next/navigation";
 
-export default function EntryForm() {
+export default function EntryForm({ entryId }: any) {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [isAnalyzing, setIsAnalyzing] = useState(false);
 
+  const navigate = useRouter();
+
   const isValid = title.trim() && content.trim();
   const isLoading = isAnalyzing;
+
+  useEffect(() => {
+    if (entryId) {
+      console.log("EntryForm ID inside useEffect:", entryId);
+      fetchEntryDetails();
+    }
+  }, [entryId]);
+
+  const fetchEntryDetails = async () => {
+    console.log("Fetch single entry");
+
+    try {
+      const res = await fetch(`/api/journals/${entryId}`);
+      if (res.ok) {
+        const data = await res.json();
+        setTitle(data.title);
+        setContent(data.content);
+      }
+    } catch (err) {
+      console.log(err);
+      console.log("Error fetching entry details!");
+    }
+  };
 
   const handleSaveEntry = async (e: React.FormEvent) => {
     e.preventDefault();
     console.log("Inside saving entry");
-    
+
     if (!isValid) {
       alert("Please fill the title and content fields to create a new Entry!");
       return;
     } else {
       try {
-
         setIsAnalyzing(true);
-       
+
         const userStr = sessionStorage.getItem("user");
         const user = JSON.parse(userStr || "");
         const userId = user ? user._id : "";
@@ -31,7 +56,7 @@ export default function EntryForm() {
         const formData = {
           userId,
           title,
-          content
+          content,
         };
 
         const res = await fetch("/api/journals", {
@@ -43,10 +68,9 @@ export default function EntryForm() {
         console.log(data);
 
         if (res.status == 201) {
-          alert("Blog created successfully");
+          alert("Entry created successfully");
           resetForm();
         }
-
       } catch (err) {
         console.log(err);
         console.log("Error creating new entry. Try again!");
@@ -54,12 +78,38 @@ export default function EntryForm() {
         setIsAnalyzing(false);
       }
     }
-  }
+  };
+
+  const updateEntry = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      setIsAnalyzing(true);
+      const updateEntryData = {
+        title,
+        content,
+      };
+
+      const res = await fetch("/api/journals", {
+        method: "PUT",
+        body: JSON.stringify({ id: entryId, ...updateEntryData }),
+      });
+      if (res.status == 200) {
+        alert("Entry updated successfully");
+        resetForm();
+        navigate.push("/journals");
+      }
+    } catch (err) {
+      console.log(err);
+      console.log("Error updating entry!");
+    } finally {
+      setIsAnalyzing(false);
+    }
+  };
 
   const resetForm = () => {
-        setTitle("");
-        setContent("");
-    }
+    setTitle("");
+    setContent("");
+  };
 
   return (
     <>
@@ -70,7 +120,7 @@ export default function EntryForm() {
             <div className="flex flex-col space-y-1.5 p-6 pb-4">
               <div className="flex items-center justify-between">
                 <h3 className="font-display text-2xl font-semibold tracking-tight">
-                  New Journal Entry
+                  {entryId ? "Edit" : "New"} Journal Entry
                 </h3>
 
                 <MMLink
@@ -138,7 +188,7 @@ export default function EntryForm() {
                   Reset
                 </Button>
                 <Button
-                  onClick={handleSaveEntry}
+                  onClick={entryId ? updateEntry : handleSaveEntry}
                   disabled={!isValid || isLoading}
                   className="h-10 px-4 py-2 flex-1 sm:flex-none
                            bg-primary hover:bg-primary/90

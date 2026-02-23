@@ -57,12 +57,14 @@ export async function DELETE(req:NextRequest){
 export async function PUT(req:NextRequest){
     try{
         await connectDB();
+        // const res = await req.json();
+        console.log("$$$$$$$$$$$$Inside PUT request$$$$$$$$$$$$$");
+        // console.log(res);
+        
         const { id, ...updatedData } = await req.json();
-
         const updatedEntry = await journals.findByIdAndUpdate({ _id: id }, updatedData, { new: true });
 
-        const deletedEntry = await journals.findByIdAndDelete({ _id: id });
-        return NextResponse.json(deletedEntry, {status : 200});
+        return NextResponse.json(updatedEntry, {status : 200});
 
     }catch(err){
         console.log(err);

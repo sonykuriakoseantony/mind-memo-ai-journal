@@ -12,12 +12,13 @@ import {
   Trash2,
 } from "lucide-react";
 import ReactMarkdown from "react-markdown";
+import MMLink from "./ui/buttonLink";
 
 type JournalCardProps = {
   journal: any;
   onDelete: (id: string) => void;
   onGenerateSummary: (entry: any) => void;
-  onEdit: (entry: any) => void;
+  onEdit: any;
   isGeneratingSummary: boolean;
 };
 
@@ -42,7 +43,16 @@ export default function JournalCard({
                 {journal.title}
               </h3>
               <p className="mt-1 text-sm text-muted-foreground">
-                February 6, 2026 at 10:13 PM
+                {journal.createdAt && new Date(journal.createdAt).toLocaleDateString("en-US", {
+                  year: "numeric",
+                  month: "short",
+                  day: "numeric",
+                })}
+                  {" at "}
+                {journal.createdAt && new Date(journal.createdAt).toLocaleTimeString("en-US", {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                })}
               </p>
             </div>
 
@@ -103,12 +113,12 @@ export default function JournalCard({
             className="mt-4 pt-4 flex items-center gap-2
                border-t border-border/50"
           >
-            <Button
+            <MMLink
               className="h-9 rounded-md px-3 text-muted-foreground hover:bg-accent/80 hover:text-white"
-              onClick={() => onEdit(journal)}
+              href={`/journals/${journal._id}`}
             >
               <Pencil className="w-4 h-4 mr-1.5" /> Edit
-            </Button>
+            </MMLink>
             <Button
               className="h-9 rounded-md px-3 text-muted-foreground hover:bg-accent/80 hover:text-white"
               onClick={() => onGenerateSummary(journal)}
@@ -117,7 +127,7 @@ export default function JournalCard({
               <Sparkles
                 className={`w-4 h-4 mr-1.5 ${isGeneratingSummary && "animate-pulse"}`}
               />
-              {journal.summary ? "Regenerate Summary" : "Generate Summary"}
+              {journal.summary && journal.summary.length > 0 ? "Regenerate Summary" : "Generate Summary"}
             </Button>
 
             <Button
